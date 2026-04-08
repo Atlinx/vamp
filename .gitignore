@@ -19,3 +19,7 @@ venv/
 /resources/panda/*.pkl
 src/vamp/_core/*.pyi
 /.mypy_cache/
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+.vscode/

@@ -19,7 +19,7 @@ classifiers = [
 dependencies = ["numpy"]
 
 [project.optional-dependencies]
-examples = ["fire", "pybullet", "pyyaml", "tqdm", "pandas", "tabulate", "xmltodict"]
+examples = ["fire", "pybullet", "pyyaml", "tqdm", "pandas", "tabulate", "xmltodict", "scipy"]
 heightmaps = ["pillow"]
 
 [project.urls]
@@ -35,3 +35,17 @@ cmake.build-type = "Release"
 [tool.scikit-build.cmake.define]
 VAMP_LTO = "OFF"
 # VAMP_FORCE_CLANG = "ON"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+vamp = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+examples = { features = ["examples", "heightmaps"], solve-group = "default" }
+heightmaps = { features = ["heightmaps"], solve-group = "default" }
+
+[tool.pixi.tasks]
