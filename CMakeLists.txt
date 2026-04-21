@@ -114,21 +114,23 @@ foreach(robot_name IN LISTS VAMP_ROBOT_MODULES)
   )
 endforeach()
 
+# Install compiled library to vamp/_core
 install(
   TARGETS _core_ext
   LIBRARY
   DESTINATION vamp/_core
 )
 
+# Install stubs to vamp/_core
 install(
   FILES "${STUB_PREFIX}__init__.pyi"
-  DESTINATION "${CMAKE_SOURCE_DIR}/src/vamp/_core"
+  DESTINATION "vamp/_core"
 )
 
 foreach(robot_name IN LISTS VAMP_ROBOT_MODULES)
   install(
     FILES "${STUB_PREFIX}${robot_name}.pyi"
-    DESTINATION "${CMAKE_SOURCE_DIR}/src/vamp/_core"
+    DESTINATION "vamp/_core"
   )
 endforeach()
 
