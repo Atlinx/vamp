@@ -166,8 +166,8 @@ def main(
     attachment = None
     attachment_sphere_id = None
     if add_ee_attachment:
-        attachment = vamp.Attachment([0, 0, 0], [0, 0, 0, 1])
-        attachment.add_spheres([vamp.Sphere([0, 0, 0.2], attachment_radius)])
+        attachment = vamp.Attachment([0, 0, 0], Rotation.from_euler("xyz", [0, 0, 0], degrees=True).as_quat())
+        attachment.add_spheres([vamp.Sphere([0, 0, 0], attachment_radius)])
         env.attach(attachment)
 
         attachment_sphere_id = sim.add_sphere(
