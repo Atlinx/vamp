@@ -55,13 +55,17 @@ def update_attachment_visualization(
     vamp_module,
     sim,
     config,
-    attachment_local_offset,
+    attachment,
 ):
     position, orientation_xyzw = vamp_module.eefk(config)
-    world_position = np.array(position) + Rotation.from_quat(orientation_xyzw).apply(
-        np.array(attachment_local_offset)
-    )
-    sim.update_object_position(attachment_sphere_id, world_position.tolist())
+    attachment.set_ee_pose(position, orientation_xyzw)
+    posed_spheres = attachment.posed_spheres
+    if posed_spheres:
+        sphere = posed_spheres[0]
+        sim.update_object_position(
+            attachment_sphere_id,
+            [sphere.x, sphere.y, sphere.z],
+        )
 
 
 def play_once_with_overlays(
@@ -71,7 +75,6 @@ def play_once_with_overlays(
     sphere_ids,
     attachment=None,
     attachment_sphere_id=None,
-    attachment_local_offset=None,
 ):
     if not len(plan):
         print(
@@ -93,7 +96,7 @@ def play_once_with_overlays(
                 vamp_module,
                 sim,
                 state_list,
-                attachment_local_offset,
+                attachment,
             )
 
         time.sleep(0.016)
@@ -136,7 +139,7 @@ def main(
     obstacles = [
         {
             "type": "cuboid",
-            "center": (-0.5, -0.5, 0.5),
+            "center": (-0.5, -0.5, 2),
             "euler": (0, 45, 45),
             "half_extents": (0.2, 0.2, 0.2),
         },
@@ -162,10 +165,9 @@ def main(
 
     attachment = None
     attachment_sphere_id = None
-    attachment_local_offset = [0, 0, attachment_offset]
     if add_ee_attachment:
-        attachment = vamp.Attachment(attachment_local_offset, [0, 0, 0, 1])
-        attachment.add_spheres([vamp.Sphere([0, 0, 0], attachment_radius)])
+        attachment = vamp.Attachment([0, 0, 0], [0, 0, 0, 1])
+        attachment.add_spheres([vamp.Sphere([0, 0, 0.2], attachment_radius)])
         env.attach(attachment)
 
         attachment_sphere_id = sim.add_sphere(
@@ -178,7 +180,7 @@ def main(
             vamp_module,
             sim,
             start,
-            attachment_local_offset,
+            attachment,
         )
 
     for obstacle in obstacles:
@@ -227,7 +229,6 @@ Simplified: {stats['simplified_path_cost']:5.3f}"""
                     sphere_overlay_ids,
                     attachment,
                     attachment_sphere_id,
-                    attachment_local_offset,
                 )
             else:
                 if (
@@ -242,7 +243,6 @@ Simplified: {stats['simplified_path_cost']:5.3f}"""
                         [],
                         attachment,
                         attachment_sphere_id,
-                        attachment_local_offset,
                     )
                 else:
                     sim.play_once(plan)
